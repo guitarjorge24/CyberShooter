@@ -23,6 +23,16 @@ void ACS_Character::MoveRight(float AxisValue)
 	AddMovementInput(GetActorRightVector(), AxisValue);
 }
 
+void ACS_Character::LookUpRate(float AxisValue)
+{
+	AddControllerPitchInput(LookUpRotationRate * AxisValue * GetWorld()->GetDeltaSeconds());
+}
+
+void ACS_Character::LookRightRate(float AxisValue)
+{
+	AddControllerYawInput(LookRightRotationRate * AxisValue * GetWorld()->GetDeltaSeconds());
+}
+
 void ACS_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -34,8 +44,10 @@ void ACS_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ACS_Character::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &ACS_Character::LookUpRate);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ACS_Character::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &ACS_Character::LookRightRate);
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 }
 

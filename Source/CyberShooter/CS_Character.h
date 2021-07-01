@@ -22,4 +22,11 @@ protected:
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
+	void LookUpRate(float AxisValue);
+	void LookRightRate(float AxisValue);
+
+	UPROPERTY(EditAnywhere, Category="Movement")
+	float LookUpRotationRate = 45.f;
+	UPROPERTY(EditAnywhere, Category="Movement")
+	float LookRightRotationRate = 90.f;
 };
