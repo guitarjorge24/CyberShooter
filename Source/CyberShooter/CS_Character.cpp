@@ -1,6 +1,7 @@
 // Copyright of Jorge Luque
 
 #include "CS_Character.h"
+#include "Gun.h"
 
 ACS_Character::ACS_Character()
 {
@@ -11,6 +12,12 @@ ACS_Character::ACS_Character()
 void ACS_Character::BeginPlay()
 {
 	Super::BeginPlay();
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	// Hide the gun that comes with the Wraith skeletal mesh so we can spawn our own gun.
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
+	// Attack our own gun to the socket we created that is under the weapon_r bone.
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+	Gun->SetOwner(this);
 }
 
 void ACS_Character::MoveForward(float AxisValue)
@@ -36,7 +43,7 @@ void ACS_Character::LookRightRate(float AxisValue)
 void ACS_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
+}	
 
 void ACS_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

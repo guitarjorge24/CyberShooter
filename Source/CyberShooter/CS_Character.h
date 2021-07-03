@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "CS_Character.generated.h"
+
+class AGun;
 
 UCLASS()
 class CYBERSHOOTER_API ACS_Character : public ACharacter
@@ -29,4 +32,9 @@ private:
 	float LookUpRotationRate = 45.f;
 	UPROPERTY(EditAnywhere, Category="Movement")
 	float LookRightRotationRate = 90.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AGun> GunClass;
+	UPROPERTY()
+	AGun* Gun;
 };
