@@ -20,6 +20,27 @@ void ACS_Character::BeginPlay()
 	Gun->SetOwner(this);
 }
 
+void ACS_Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}	
+
+void ACS_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ACS_Character::MoveForward);
+	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &ACS_Character::LookUpRate);
+	
+	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ACS_Character::MoveRight);
+	PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &ACS_Character::LookRightRate);
+	
+	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Shoot"), IE_Pressed, this, &ACS_Character::Shoot);
+}
+
 void ACS_Character::MoveForward(float AxisValue)
 {
 	AddMovementInput(GetActorForwardVector(), AxisValue);
@@ -40,21 +61,14 @@ void ACS_Character::LookRightRate(float AxisValue)
 	AddControllerYawInput(LookRightRotationRate * AxisValue * GetWorld()->GetDeltaSeconds());
 }
 
-void ACS_Character::Tick(float DeltaTime)
+void ACS_Character::Shoot()
 {
-	Super::Tick(DeltaTime);
-}	
-
-void ACS_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ACS_Character::MoveForward);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &ACS_Character::LookUpRate);
-	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ACS_Character::MoveRight);
-	PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &ACS_Character::LookRightRate);
-	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
+	if(ensure(Gun))
+	{
+		Gun->PullTrigger();
+	}
 }
+
+
+
 

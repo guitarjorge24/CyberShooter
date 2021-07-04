@@ -14,6 +14,7 @@ class CYBERSHOOTER_API AGun : public AActor
 public:	
 	AGun();
 	virtual void Tick(float DeltaTime) override;
+	void PullTrigger();
 
 protected:
 	virtual void BeginPlay() override;
@@ -21,7 +22,9 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* GunRoot;
-
 	UPROPERTY(VisibleAnywhere)
 	class USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* MuzzleFlash;
 };

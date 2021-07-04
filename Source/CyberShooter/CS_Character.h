@@ -23,11 +23,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	void MoveForward(float AxisValue);
-	void MoveRight(float AxisValue);
-	void LookUpRate(float AxisValue);
-	void LookRightRate(float AxisValue);
-
 	UPROPERTY(EditAnywhere, Category="Movement")
 	float LookUpRotationRate = 45.f;
 	UPROPERTY(EditAnywhere, Category="Movement")
@@ -37,4 +32,10 @@ private:
 	TSubclassOf<AGun> GunClass;
 	UPROPERTY()
 	AGun* Gun;
+
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
+	void LookUpRate(float AxisValue);
+	void LookRightRate(float AxisValue);
+	void Shoot();
 };
