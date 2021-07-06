@@ -12,6 +12,8 @@ ACS_Character::ACS_Character()
 void ACS_Character::BeginPlay()
 {
 	Super::BeginPlay();
+	CurrentHealth = MaxHealth;
+	
 	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
 	// Hide the gun that comes with the Wraith skeletal mesh so we can spawn our own gun.
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
@@ -39,6 +41,20 @@ void ACS_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Shoot"), IE_Pressed, this, &ACS_Character::Shoot);
+}
+
+float ACS_Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DamageToApply = FMath::Min(CurrentHealth, DamageToApply); // the most damage we can apply should be the remaining HP.
+	CurrentHealth -= DamageToApply;
+	UE_LOG(LogTemp, Warning, TEXT("CurrentHealth: %f"), CurrentHealth);
+	return DamageToApply;
+}
+
+bool ACS_Character::IsDead() const
+{
+	return CurrentHealth <= 0;
 }
 
 void ACS_Character::MoveForward(float AxisValue)

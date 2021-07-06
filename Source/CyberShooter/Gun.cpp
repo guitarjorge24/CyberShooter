@@ -40,7 +40,8 @@ void AGun::PullTrigger()
 
 	FVector ViewPointLocation;
 	FRotator ViewPointRotation;
-	// calls APlayerController::GetPlayerViewPoint and not AController::GetPlayerViewPoint since the OwnerPawn is an ACS_Character which uses APlayerController instead of AController
+	// calls APlayerController::GetPlayerViewPoint and not AController::GetPlayerViewPoint
+	// since the OwnerPawn is an ACS_Character which uses APlayerController instead of AController
 	OwnerController->GetPlayerViewPoint(ViewPointLocation, ViewPointRotation);
 
 	FVector TraceEndLocation = ViewPointLocation + (ViewPointRotation.Vector() * FiringRange);
@@ -60,10 +61,18 @@ void AGun::PullTrigger()
 		// #ToDoJ: Does the particle effect look better if shoots towards the player camera or the wall's normal?
 		// We can set the particle rotation to PlayerViewOppositeDirection.Rotation() or HitResult.Normal.Rotation()
 		// Using the normal looks more realistic, the VFX is more noticeable when emitting towards the player.
-		FVector PlayerViewOppositeDirection = -ViewPointRotation.Vector();
+		FVector BulletViewOppositeDirection = -ViewPointRotation.Vector();
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, HitResult.Location, HitResult.Normal.Rotation());
+
+		if (HitResult.GetActor())
+		{
+			FPointDamageEvent DamageEvent(Damage, HitResult, ViewPointRotation.Vector(), nullptr);
+			HitResult.GetActor()->TakeDamage(Damage, DamageEvent, OwnerController, this);
+		}
 	}
 }
+
+
 
 void AGun::ShootLineTrace(FHitResult& OutHit, FVector ViewPointLocation, FRotator ViewPointRotation,
                           FVector TraceEndLocation, bool bDrawDebug = false) const

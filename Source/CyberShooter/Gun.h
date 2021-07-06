@@ -35,4 +35,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float FiringRange = 3000.f;
+	UPROPERTY(EditAnywhere)
+	float Damage = 10.f;
 };
