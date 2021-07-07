@@ -11,7 +11,20 @@ class CYBERSHOOTER_API ACS_AIController : public AAIController
 {
 	GENERATED_BODY()
 
+	public:
+	virtual void Tick(float DeltaSeconds) override;
+
 	protected:
 	virtual void BeginPlay() override;
-	
+
+	private:
+	UPROPERTY(EditAnywhere)
+	class UBehaviorTree* BehaviorTree;
+
+	// Used to be needed before we used the Behavior Tree asset. Kept for reference.
+	// UPROPERTY()
+	// APawn* PlayerPawn;
+	/** @brief How close to the player the AI needs to be before it stops moving towards the player. */
+	// UPROPERTY(EditAnywhere)
+	// float GoalRadius = 200.f;
 };

@@ -66,7 +66,7 @@ void AGun::PullTrigger()
 
 		if (HitResult.GetActor())
 		{
-			FPointDamageEvent DamageEvent(Damage, HitResult, ViewPointRotation.Vector(), nullptr);
+			FPointDamageEvent DamageEvent(Damage, HitResult, BulletViewOppositeDirection, nullptr);
 			HitResult.GetActor()->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
 	}
