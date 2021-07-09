@@ -3,23 +3,40 @@
 #include "CS_AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void ACS_AIController::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
 	if(BehaviorTree)
 	{
 		RunBehaviorTree(BehaviorTree);
+		GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
+
+		Cast<ACharacter>(GetPawn())->GetCharacterMovement()->MaxWalkSpeed = 400.f;
 	}
 
-	// used to be needed before we used the Behavior Tree asset. Kept for reference.
-	// PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
 void ACS_AIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+
+	if(LineOfSightTo(PlayerPawn))
+	{
+		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+		GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
+	}
+	else
+	{
+		GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+	}
 	
 	// This logic below was replaced by the Behavior Tree asset. Kept for reference.
 	// if(LineOfSightTo(PlayerPawn))

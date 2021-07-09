@@ -21,9 +21,10 @@ class CYBERSHOOTER_API ACS_AIController : public AAIController
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* BehaviorTree;
 
+	UPROPERTY()
+	APawn* PlayerPawn;
+	
 	// Used to be needed before we used the Behavior Tree asset. Kept for reference.
-	// UPROPERTY()
-	// APawn* PlayerPawn;
 	/** @brief How close to the player the AI needs to be before it stops moving towards the player. */
 	// UPROPERTY(EditAnywhere)
 	// float GoalRadius = 200.f;
