@@ -9,7 +9,7 @@
 
 ACS_Character::ACS_Character()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -17,7 +17,7 @@ void ACS_Character::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
-	
+
 	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
 	// Hide the gun that comes with the Wraith skeletal mesh so we can spawn our own gun.
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
@@ -29,7 +29,7 @@ void ACS_Character::BeginPlay()
 void ACS_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}	
+}
 
 void ACS_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -38,16 +38,17 @@ void ACS_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ACS_Character::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &ACS_Character::LookUpRate);
-	
+
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ACS_Character::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &ACS_Character::LookRightRate);
-	
+
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Shoot"), IE_Pressed, this, &ACS_Character::Shoot);
 }
 
-float ACS_Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float ACS_Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                                AActor* DamageCauser)
 {
 	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	DamageToApply = FMath::Min(CurrentHealth, DamageToApply); // the most damage we can apply should be the remaining HP.
@@ -56,16 +57,14 @@ float ACS_Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 
 	if (IsDead())
 	{
+		ACyberShooterGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ACyberShooterGameModeBase>();
+		if (GameMode) { GameMode->PawnKilled(this); }
+
 		DetachFromControllerPendingDestroy();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// SetActorEnableCollision(false); // turns off all collisions from all components in the actor
-		ACyberShooterGameModeBase* GameMode =  GetWorld()->GetAuthGameMode<ACyberShooterGameModeBase>();
-		if (GameMode)
-		{
-			GameMode->PawnKilled(this);
-		}
 	}
-	
+
 	return DamageToApply;
 }
 
@@ -96,12 +95,8 @@ void ACS_Character::LookRightRate(float AxisValue)
 
 void ACS_Character::Shoot()
 {
-	if(ensure(Gun))
+	if (ensure(Gun))
 	{
 		Gun->PullTrigger();
 	}
 }
-
-
-
-
