@@ -1,6 +1,5 @@
 // Copyright of Jorge Luque
 
-
 #include "KillEmAllGameMode.h"
 
 void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
