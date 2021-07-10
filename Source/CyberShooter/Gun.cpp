@@ -47,7 +47,7 @@ void AGun::PullTrigger()
 	FVector TraceEndLocation = ViewPointLocation + (ViewPointRotation.Vector() * FiringRange);
 
 	FHitResult HitResult;
-	ShootLineTrace(HitResult, ViewPointLocation, ViewPointRotation, TraceEndLocation, false);
+	ShootLineTrace(HitResult, ViewPointLocation, ViewPointRotation, TraceEndLocation, true);
 
 	// Alternate way to trace & draw line + impact point using the BP Kismet node LineTraceByChannel.
 	// UKismetSystemLibrary::LineTraceSingle(
@@ -77,7 +77,10 @@ void AGun::PullTrigger()
 void AGun::ShootLineTrace(FHitResult& OutHit, FVector ViewPointLocation, FRotator ViewPointRotation,
                           FVector TraceEndLocation, bool bDrawDebug = false) const
 {
-	GetWorld()->LineTraceSingleByChannel(OutHit, ViewPointLocation, TraceEndLocation, ECC_GameTraceChannel1);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(this->GetOwner());
+	GetWorld()->LineTraceSingleByChannel(OutHit, ViewPointLocation, TraceEndLocation, ECC_GameTraceChannel1, Params);
 
 	if (!bDrawDebug) { return; }
 

@@ -2,6 +2,7 @@
 
 #include "CS_Character.h"
 #include "Gun.h"
+#include "Components/CapsuleComponent.h"
 
 ACS_Character::ACS_Character()
 {
@@ -49,6 +50,14 @@ float ACS_Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	DamageToApply = FMath::Min(CurrentHealth, DamageToApply); // the most damage we can apply should be the remaining HP.
 	CurrentHealth -= DamageToApply;
 	UE_LOG(LogTemp, Warning, TEXT("CurrentHealth: %f"), CurrentHealth);
+
+	if (IsDead())
+	{
+		DetachFromControllerPendingDestroy();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// SetActorEnableCollision(false); // turns off all collisions from all components in the actor
+	}
+	
 	return DamageToApply;
 }
 
