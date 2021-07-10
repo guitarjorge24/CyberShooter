@@ -18,6 +18,8 @@ public:
 	ACS_Character();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void Shoot();
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator,
 						AActor* DamageCauser) override;
 	UFUNCTION(BlueprintPure)
@@ -46,5 +48,4 @@ private:
 	void MoveRight(float AxisValue);
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
-	void Shoot();
 };

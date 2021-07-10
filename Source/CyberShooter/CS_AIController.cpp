@@ -27,18 +27,18 @@ void ACS_AIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-
-	if(LineOfSightTo(PlayerPawn))
-	{
-		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
-		GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
-	}
-	else
-	{
-		GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
-	}
+	// This logic was replaced by the custom BT services like UBTService_PlayerLocation and UBTService_PlayerLocationIfSeen 
+	// if(LineOfSightTo(PlayerPawn))
+	// {
+	// 	GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+	// 	GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
+	// }
+	// else
+	// {
+	// 	GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+	// }
 	
-	// This logic below was replaced by the Behavior Tree asset. Kept for reference.
+	// This logic below was replaced by the default tasks in Behavior Tree asset. Kept for reference.
 	// if(LineOfSightTo(PlayerPawn))
 	// {
 	// 	SetFocus(PlayerPawn, EAIFocusPriority::Gameplay);
