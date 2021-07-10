@@ -1,8 +1,11 @@
 // Copyright of Jorge Luque
 
 #include "CS_Character.h"
+
+#include "CyberShooterGameModeBase.h"
 #include "Gun.h"
 #include "Components/CapsuleComponent.h"
+
 
 ACS_Character::ACS_Character()
 {
@@ -56,6 +59,11 @@ float ACS_Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 		DetachFromControllerPendingDestroy();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// SetActorEnableCollision(false); // turns off all collisions from all components in the actor
+		ACyberShooterGameModeBase* GameMode =  GetWorld()->GetAuthGameMode<ACyberShooterGameModeBase>();
+		if (GameMode)
+		{
+			GameMode->PawnKilled(this);
+		}
 	}
 	
 	return DamageToApply;
