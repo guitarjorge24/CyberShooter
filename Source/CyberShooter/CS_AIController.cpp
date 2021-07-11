@@ -1,6 +1,8 @@
 // Copyright of Jorge Luque
 
 #include "CS_AIController.h"
+
+#include "CS_Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -10,17 +12,16 @@
 void ACS_AIController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
-	if(BehaviorTree)
+	if (BehaviorTree)
 	{
 		RunBehaviorTree(BehaviorTree);
 		GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
 
 		Cast<ACharacter>(GetPawn())->GetCharacterMovement()->MaxWalkSpeed = 400.f;
 	}
-
 }
 
 void ACS_AIController::Tick(float DeltaSeconds)
@@ -37,7 +38,7 @@ void ACS_AIController::Tick(float DeltaSeconds)
 	// {
 	// 	GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
 	// }
-	
+
 	// This logic below was replaced by the default tasks in Behavior Tree asset. Kept for reference.
 	// if(LineOfSightTo(PlayerPawn))
 	// {
@@ -49,4 +50,18 @@ void ACS_AIController::Tick(float DeltaSeconds)
 	// 	ClearFocus(EAIFocusPriority::Gameplay);
 	// 	StopMovement();
 	// }
+}
+
+bool ACS_AIController::IsDead() const
+{
+	ACS_Character* ControlledCharacter = Cast<ACS_Character>(GetPawn());
+
+	if (ControlledCharacter)
+	{
+		return ControlledCharacter->IsDead();
+	}
+
+	// If ControlledCharacter is null, meaning the AI Controller is not controlling a pawn, then the AI must be dead
+	// because we only call DetachFromControllerPendingDestroy() when a character dies.
+	return true;
 }
