@@ -15,7 +15,14 @@ class CYBERSHOOTER_API ACS_PlayerController : public APlayerController
 public:
 	virtual void GameHasEnded(AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
+	UPROPERTY()
+	UUserWidget* HUD;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> HUDClass;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> WinScreenClass;
 	UPROPERTY(EditAnywhere)
@@ -25,4 +32,5 @@ private:
 	float RestartDelay = 5.f;
 
 	FTimerHandle RestartTimer;
+	
 };
