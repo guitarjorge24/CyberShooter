@@ -24,6 +24,8 @@ public:
 						AActor* DamageCauser) override;
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercentage() const;
 
 protected:
 	virtual void BeginPlay() override;

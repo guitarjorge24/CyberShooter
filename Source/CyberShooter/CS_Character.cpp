@@ -74,6 +74,11 @@ bool ACS_Character::IsDead() const
 	return CurrentHealth <= 0;
 }
 
+float ACS_Character::GetHealthPercentage() const
+{
+	return CurrentHealth / MaxHealth;
+}
+
 void ACS_Character::MoveForward(float AxisValue)
 {
 	AddMovementInput(GetActorForwardVector(), AxisValue);
