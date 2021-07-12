@@ -15,26 +15,33 @@ public:
 	AGun();
 	virtual void Tick(float DeltaTime) override;
 	void PullTrigger();
+	void AutoSetOwnerController();
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	void ShootLineTrace(FHitResult& OutHit, FVector ViewPointLocation, FRotator ViewPointRotation,
-	                    FVector TraceEndLocation, bool bDrawDebug) const;
+	AController* OwnerController;
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* GunRoot;
 	UPROPERTY(VisibleAnywhere)
 	class USkeletalMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, Category="VFX")
+	UPROPERTY(EditAnywhere, Category="Effects")
 	UParticleSystem* MuzzleFlash;
-	UPROPERTY(EditAnywhere, Category="VFX")
+	UPROPERTY(EditAnywhere, Category="Effects")
 	UParticleSystem* ImpactParticle;
-
+	UPROPERTY(EditAnywhere, Category="Effects")
+	USoundBase* MuzzleSound;
+	UPROPERTY(EditAnywhere, Category="Effects")
+	USoundBase* ImpactSound;
+	
+	
 	UPROPERTY(EditAnywhere)
 	float FiringRange = 3000.f;
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.f;
+
+	void ShootLineTrace(FHitResult& OutHit, FVector& ShotDirection, bool bDrawDebug) const;
 };

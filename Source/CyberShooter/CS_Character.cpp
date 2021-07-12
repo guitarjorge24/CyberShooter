@@ -24,6 +24,7 @@ void ACS_Character::BeginPlay()
 	// Attack our own gun to the socket we created that is under the weapon_r bone.
 	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
 	Gun->SetOwner(this);
+	Gun->AutoSetOwnerController();
 }
 
 void ACS_Character::Tick(float DeltaTime)

@@ -27,27 +27,17 @@ void AGun::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+
 void AGun::PullTrigger()
 {
-	// Use SpawnEmitterAttached instead of SpawnEmitterAtLocation because in case there's smoke coming out of the gun
+	// Used SpawnEmitterAttached instead of SpawnEmitterAtLocation because in case there's smoke coming out of the gun
 	// muzzle, we want that smoke trail to follow the weapon's location.
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
+	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
 
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (!OwnerPawn) return;
-	AController* OwnerController = OwnerPawn->GetController();
-	if (!OwnerController) return;
-
-	FVector ViewPointLocation;
-	FRotator ViewPointRotation;
-	// calls APlayerController::GetPlayerViewPoint and not AController::GetPlayerViewPoint
-	// since the OwnerPawn is an ACS_Character which uses APlayerController instead of AController
-	OwnerController->GetPlayerViewPoint(ViewPointLocation, ViewPointRotation);
-
-	FVector TraceEndLocation = ViewPointLocation + (ViewPointRotation.Vector() * FiringRange);
-
-	FHitResult HitResult;
-	ShootLineTrace(HitResult, ViewPointLocation, ViewPointRotation, TraceEndLocation, false);
+	FHitResult HitResult; // gets zero initialized.
+	FVector ToShotDirection; // The direction to where the shot came from
+	ShootLineTrace(HitResult, ToShotDirection, false);
 
 	// Alternate way to trace & draw line + impact point using the BP Kismet node LineTraceByChannel.
 	// UKismetSystemLibrary::LineTraceSingle(
@@ -60,33 +50,49 @@ void AGun::PullTrigger()
 	{
 		// #ToDoJ: Does the particle effect look better if shoots towards the player camera or the wall's normal?
 		// We can set the particle rotation to PlayerViewOppositeDirection.Rotation() or HitResult.Normal.Rotation()
-		// Using the normal looks more realistic, the VFX is more noticeable when emitting towards the player.
-		FVector BulletViewOppositeDirection = -ViewPointRotation.Vector();
+		// Using the normal looks more realistic, but the VFX is more noticeable when emitting towards the player.
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, HitResult.Location, HitResult.Normal.Rotation());
+
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.Location);
 
 		if (HitResult.GetActor())
 		{
-			FPointDamageEvent DamageEvent(Damage, HitResult, BulletViewOppositeDirection, nullptr);
+			FPointDamageEvent DamageEvent(Damage, HitResult, ToShotDirection, nullptr);
 			HitResult.GetActor()->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
 	}
 }
 
-
-
-void AGun::ShootLineTrace(FHitResult& OutHit, FVector ViewPointLocation, FRotator ViewPointRotation,
-                          FVector TraceEndLocation, bool bDrawDebug = false) const
+void AGun::AutoSetOwnerController()
 {
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	OwnerPawn ? OwnerController = OwnerPawn->GetController() : nullptr;
+}
+
+void AGun::ShootLineTrace(FHitResult& OutHit, FVector& ShotDirection, bool bDrawDebug = false) const
+{
+	if (!OwnerController) return;
+
+	FVector ViewPointLocation;
+	FRotator ViewPointRotation;
+	// calls APlayerController::GetPlayerViewPoint and not AController::GetPlayerViewPoint
+	// since the OwnerPawn is an ACS_Character which uses APlayerController instead of AController
+	OwnerController->GetPlayerViewPoint(ViewPointLocation, ViewPointRotation);
+	ShotDirection = -ViewPointRotation.Vector();
+
+	FVector TraceEndLocation = ViewPointLocation + (ViewPointRotation.Vector() * FiringRange);
+
+	// Ignore the gun and the gun's owner in the line trace
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(this->GetOwner());
 	GetWorld()->LineTraceSingleByChannel(OutHit, ViewPointLocation, TraceEndLocation, ECC_GameTraceChannel1, Params);
 
+
 	if (!bDrawDebug) { return; }
 
 	// Draws the location and rotation of the player's camera which is where the linetrace is shooting from
-	DrawDebugCamera(GetWorld(), ViewPointLocation, ViewPointRotation, 90.f,
-	                2.f, FColor::Cyan, true);
+	DrawDebugCamera(GetWorld(), ViewPointLocation, ViewPointRotation, 90.f, 2.f, FColor::Cyan, true);
 
 	// Draw the line of the bullet and the impact point the old school way:
 	DrawDebugLine(GetWorld(), ViewPointLocation, TraceEndLocation, FColor::Blue, true);
