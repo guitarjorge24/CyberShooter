@@ -43,5 +43,13 @@ private:
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.f;
 
-	void ShootLineTrace(FHitResult& OutHit, FVector& ShotDirection, bool bDrawDebug) const;
+	/**
+ 	* @brief 
+ 	* @param OutHit The HitResult containing the impact location and whether there was an impact or not
+ 	* @param OutShotDirection The direction opposite to the direction of the bullet's velocity. The direction to the location
+ 	* where the gun was fired, from the perspective of the impact location.
+ 	* @param bDrawDebug Whether the bullet line trace should be drawn to the screen or not. Also draws camera and impact point.
+ 	*/
+
+	void ShootLineTrace(FHitResult& OutHit, FVector& OutShotDirection, bool bDrawDebug) const;
 };

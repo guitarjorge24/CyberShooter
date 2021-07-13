@@ -36,7 +36,7 @@ void AGun::PullTrigger()
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
 
 	FHitResult HitResult; // gets zero initialized.
-	FVector ToShotDirection; // The direction to where the shot came from
+	FVector ToShotDirection; // The direction to where the shot came from. From the perspective of the impact location.
 	ShootLineTrace(HitResult, ToShotDirection, false);
 
 	// Alternate way to trace & draw line + impact point using the BP Kismet node LineTraceByChannel.
@@ -69,7 +69,7 @@ void AGun::AutoSetOwnerController()
 	OwnerPawn ? OwnerController = OwnerPawn->GetController() : nullptr;
 }
 
-void AGun::ShootLineTrace(FHitResult& OutHit, FVector& ShotDirection, bool bDrawDebug = false) const
+void AGun::ShootLineTrace(FHitResult& OutHit, FVector& OutShotDirection, bool bDrawDebug = false) const
 {
 	if (!OwnerController) return;
 
@@ -78,7 +78,7 @@ void AGun::ShootLineTrace(FHitResult& OutHit, FVector& ShotDirection, bool bDraw
 	// calls APlayerController::GetPlayerViewPoint and not AController::GetPlayerViewPoint
 	// since the OwnerPawn is an ACS_Character which uses APlayerController instead of AController
 	OwnerController->GetPlayerViewPoint(ViewPointLocation, ViewPointRotation);
-	ShotDirection = -ViewPointRotation.Vector();
+	OutShotDirection = -ViewPointRotation.Vector();
 
 	FVector TraceEndLocation = ViewPointLocation + (ViewPointRotation.Vector() * FiringRange);
 
