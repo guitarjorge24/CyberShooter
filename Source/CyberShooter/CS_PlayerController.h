@@ -28,7 +28,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> LoseScreenClass;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	float RestartDelay = 5.f;
 
 	FTimerHandle RestartTimer;
